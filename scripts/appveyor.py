@@ -50,6 +50,7 @@ def setup_build_env():
     path = [
         str(opt.py_dir),
         str(opt.py_dir / 'Scripts'),
+        r'C:\Strawberry\perl\bin',
         r'C:\Program Files\Git\mingw64\bin',
         os.environ['PATH'],
     ]
@@ -764,10 +765,17 @@ class Options:
         """
         The path of the Visual C compiler.
         """
-        return Path(
-            r"C:\Program Files (x86)\Microsoft Visual Studio %s\VC"
-            % self.vs_ver
-        )
+        if self.vs_ver == '16.0':
+            path = Path(
+                    r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build"
+                    )
+        else:
+            path = Path(
+                r"C:\Program Files (x86)\Microsoft Visual Studio %s\VC"
+                % self.vs_ver
+            )
+        return path
+
 
     @property
     def vs_ver(self):
