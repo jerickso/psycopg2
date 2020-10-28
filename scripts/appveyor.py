@@ -325,7 +325,6 @@ $config->{openssl} = "%s";
         ['cl', 'pg_config.c', '/MT', '/nologo', fr'/I{pgbuild}\src\include']
         + ['/link', fr'/LIBPATH:{top}\lib']
         + ['libpgcommon.lib', 'libpgport.lib', 'advapi32.lib']
-        + ['pgcrypto.lib', 'postgres.lib']
         + ['/NODEFAULTLIB:libcmt.lib']
         + [fr'/OUT:{top}\bin\pg_config.exe']
     )
@@ -344,6 +343,7 @@ def build_psycopg():
     run_python(
         ["setup.py", "build_ext", "--have-ssl"]
         + ["-l", "libpgcommon", "-l", "libpgport"]
+        + ["-l", "pgcrypto", "-l", "postgres"]
         + ["-L", opt.ssl_build_dir / 'lib']
         + ['-I', opt.ssl_build_dir / 'include']
     )
