@@ -224,13 +224,15 @@ def build_openssl():
 
 def install_activeperl():
     # Download ActivePerl
+    logger.info("Starting ActivePerl Installation")
+
     msiname = f'ActivePerl.msi'
     msifile = opt.cache_dir / msiname
     if not msifile.exists():
         download(
             f"https://cli-msi.s3.amazonaws.com/ActivePerl-5.28.msi", msifile
         )
-    run_command(["msiexec", "/i", msifile, "/qn"])
+    run_command(["start", "/wait", "msiexec", "/i", msifile, "/qn"])
 
 def build_libpq():
     top = opt.pg_build_dir
