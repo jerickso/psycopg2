@@ -299,7 +299,6 @@ $config->{openssl} = "%s";
     run_command([which("build"), "libpgcommon"])
     run_command([which("build"), "libpq"])
     run_command([which("build"), "pgcrypto"])
-    run_command([which("build"), "postgres"])
 
     # Install includes
     with (pgbuild / "src/backend/parser/gram.h").open("w") as f:
@@ -312,7 +311,7 @@ $config->{openssl} = "%s";
         + [f"chdir('../../..'); CopyIncludeFiles('{top}')"]
     )
 
-    for lib in ('libpgport', 'libpgcommon', 'libpq', 'pgcrypto', 'postgres'):
+    for lib in ('libpgport', 'libpgcommon', 'libpq', 'pgcrypto'):
         copy_file(pgbuild / f'Release/{lib}/{lib}.lib', top / 'lib')
 
     # Prepare local include directory for building from
@@ -343,7 +342,7 @@ def build_psycopg():
     run_python(
         ["setup.py", "build_ext", "--have-ssl"]
         + ["-l", "libpgcommon", "-l", "libpgport"]
-        + ["-l", "pgcrypto", "-l", "postgres"]
+        + ["-l", "pgcrypto", "-l", "secur32"]
         + ["-L", opt.ssl_build_dir / 'lib']
         + ['-I', opt.ssl_build_dir / 'include']
     )
