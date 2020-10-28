@@ -220,7 +220,7 @@ def build_openssl():
     assert (top / 'lib' / 'libssl.lib').exists()
 
     os.chdir(opt.clone_dir)
-    shutil.rmtree(sslbuild)
+#    shutil.rmtree(sslbuild)
 
 def install_activeperl():
     # Download ActivePerl
@@ -298,6 +298,8 @@ $config->{openssl} = "%s";
     run_command([which("build"), "libpgport"])
     run_command([which("build"), "libpgcommon"])
     run_command([which("build"), "libpq"])
+    run_command([which("build"), "pgcrypto"])
+    run_command([which("build"), "postgres"])
 
     # Install includes
     with (pgbuild / "src/backend/parser/gram.h").open("w") as f:
@@ -310,7 +312,7 @@ $config->{openssl} = "%s";
         + [f"chdir('../../..'); CopyIncludeFiles('{top}')"]
     )
 
-    for lib in ('libpgport', 'libpgcommon', 'libpq'):
+    for lib in ('libpgport', 'libpgcommon', 'libpq', 'pgcrypto', 'postgres'):
         copy_file(pgbuild / f'Release/{lib}/{lib}.lib', top / 'lib')
 
     # Prepare local include directory for building from
@@ -323,6 +325,7 @@ $config->{openssl} = "%s";
         ['cl', 'pg_config.c', '/MT', '/nologo', fr'/I{pgbuild}\src\include']
         + ['/link', fr'/LIBPATH:{top}\lib']
         + ['libpgcommon.lib', 'libpgport.lib', 'advapi32.lib']
+        + ['pgcrypto.lib', 'postgres.lib']
         + ['/NODEFAULTLIB:libcmt.lib']
         + [fr'/OUT:{top}\bin\pg_config.exe']
     )
@@ -331,7 +334,7 @@ $config->{openssl} = "%s";
     assert (top / 'bin' / 'pg_config.exe').exists()
 
     os.chdir(opt.clone_dir)
-    shutil.rmtree(pgbuild)
+#    shutil.rmtree(pgbuild)
 
 
 def build_psycopg():
