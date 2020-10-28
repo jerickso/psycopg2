@@ -50,7 +50,7 @@ def setup_build_env():
     path = [
         str(opt.py_dir),
         str(opt.py_dir / 'Scripts'),
-        r'C:\Strawberry\perl\bin',
+        r'C:\perl64\bin',
         r'C:\Program Files\Git\mingw64\bin',
         r'%s\openssl\bin'%opt.cache_arch_dir,
         os.environ['PATH'],
@@ -166,6 +166,7 @@ def run_openssl(args):
 
 def step_build_script():
     setup_build_env()
+    install_activeperl()
     build_openssl()
     build_libpq()
     build_psycopg()
@@ -221,6 +222,15 @@ def build_openssl():
     os.chdir(opt.clone_dir)
     shutil.rmtree(sslbuild)
 
+def install_activeperl():
+    # Download ActivePerl
+    msiname = f'ActivePerl.msi'
+    msifile = opt.cache_dir / msiname
+    if not msifile.exists():
+        download(
+            f"https://cli-msi.s3.amazonaws.com/ActivePerl-5.28.msi", msifile
+        )
+    run_command(["msiexec", "/i", msifile, "/qn"])
 
 def build_libpq():
     top = opt.pg_build_dir
@@ -253,17 +263,17 @@ def build_libpq():
 
     # Patch for OpenSSL 1.1 configuration. See:
     # https://www.postgresql-archive.org/Compile-psql-9-6-with-SSL-Version-1-1-0-td6054118.html
-    assert Path("src/include/pg_config.h.win32").exists()
-    with open("src/include/pg_config.h.win32", 'a') as f:
-        print(
-            """
-#define HAVE_ASN1_STRING_GET0_DATA 1
-#define HAVE_BIO_GET_DATA 1
-#define HAVE_BIO_METH_NEW 1
-#define HAVE_OPENSSL_INIT_SSL 1
-""",
-            file=f,
-        )
+#    assert Path("src/include/pg_config.h.win32").exists()
+#    with open("src/include/pg_config.h.win32", 'a') as f:
+#        print(
+#            """
+##define HAVE_ASN1_STRING_GET0_DATA 1
+##define HAVE_BIO_GET_DATA 1
+##define HAVE_BIO_METH_NEW 1
+##define HAVE_OPENSSL_INIT_SSL 1
+#""",
+#            file=f,
+#        )
 
     # Setup build config file (config.pl)
     os.chdir("src/tools/msvc")
