@@ -282,10 +282,12 @@ $config->{openssl} = "%s";
     # Hack the Mkvcbuild.pm file so we build the lib version of libpq
     file_replace('Mkvcbuild.pm', "'libpq', 'dll'", "'libpq', 'lib'")
 
-    # Build libpgport, libpgcommon, libpq
+    # Build libpgport, libpgcommon, libpq, and pg_config
     run_command([which("build"), "libpgport"])
     run_command([which("build"), "libpgcommon"])
     run_command([which("build"), "libpq"])
+    run_command([which("build"), "pg_config"])
+#    run_command([which("build"), "libpgtypes"])
 
     # Install includes
     with (pgbuild / "src/backend/parser/gram.h").open("w") as f:
@@ -301,19 +303,21 @@ $config->{openssl} = "%s";
     for lib in ('libpgport', 'libpgcommon', 'libpq'):
         copy_file(pgbuild / f'Release/{lib}/{lib}.lib', top / 'lib')
 
+    copy_file(pgbuild / f'Release/pg_config/pg_config.exe', top / 'bin')
+
     # Prepare local include directory for building from
     for dir in ('win32', 'win32_msvc'):
         merge_dir(pgbuild / f"src/include/port/{dir}", pgbuild / "src/include")
 
     # Build pg_config in place
-    os.chdir(pgbuild / 'src/bin/pg_config')
-    run_command(
-        ['cl', 'pg_config.c', '/MT', '/nologo', fr'/I{pgbuild}\src\include']
-        + ['/link', fr'/LIBPATH:{top}\lib']
-        + ['libpgcommon.lib', 'libpgport.lib', 'advapi32.lib']
-        + ['/NODEFAULTLIB:libcmt.lib']
-        + [fr'/OUT:{top}\bin\pg_config.exe']
-    )
+#    os.chdir(pgbuild / 'src/bin/pg_config')
+#    run_command(
+#        ['cl', 'pg_config.c', '/MT', '/nologo', fr'/I{pgbuild}\src\include']
+#        + ['/link', fr'/LIBPATH:{top}\lib']
+#        + ['libpgcommon.lib', 'libpgport.lib', 'advapi32.lib']
+#        + ['/NODEFAULTLIB:libcmt.lib']
+#        + [fr'/OUT:{top}\bin\pg_config.exe']
+#    )
 
     assert (top / 'lib' / 'libpq.lib').exists()
     assert (top / 'bin' / 'pg_config.exe').exists()
