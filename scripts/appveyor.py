@@ -333,9 +333,8 @@ def build_psycopg():
     run_python(
         ["setup.py", "build_ext", "--have-ssl"]
         + ["-l", "libpgcommon", "-l", "libpgport"]
-        + ["-L", opt.ssl_build_dir / 'lib;' + opt.pg_build_dir / 'lib']
-        + ['-I', opt.ssl_build_dir / 'include;' +  opt.pg_build_dir / 'include']
-    )
+        + ["-L", str(opt.ssl_build_dir / 'lib;') + str(opt.pg_build_dir / 'lib'])
+        + ['-I', str(opt.ssl_build_dir / 'include;') + str(opt.pg_build_dir / 'include'])
     run_python(["setup.py", "build_py"])
 
 
