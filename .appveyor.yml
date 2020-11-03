@@ -81,7 +81,4 @@ before_test:
 test_script:
     - "%PYEXE% scripts\\appveyor.py test_script"
 
-on_finish:
-  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
-
 # vim: set ts=4 sts=4 sw=4:
