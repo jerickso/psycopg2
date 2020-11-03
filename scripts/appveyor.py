@@ -282,12 +282,10 @@ $config->{openssl} = "%s";
     # Hack the Mkvcbuild.pm file so we build the lib version of libpq
     file_replace('Mkvcbuild.pm', "'libpq', 'dll'", "'libpq', 'lib'")
 
-    # Build libpgport, libpgcommon, libpq, and pg_config
+    # Build libpgport, libpgcommon, libpq
     run_command([which("build"), "libpgport"])
     run_command([which("build"), "libpgcommon"])
     run_command([which("build"), "libpq"])
-#    run_command([which("build"), "pg_config"])
-#    run_command([which("build"), "libpgtypes"])
 
     # Install includes
     with (pgbuild / "src/backend/parser/gram.h").open("w") as f:
@@ -302,8 +300,6 @@ $config->{openssl} = "%s";
 
     for lib in ('libpgport', 'libpgcommon', 'libpq'):
         copy_file(pgbuild / f'Release/{lib}/{lib}.lib', top / 'lib')
-
-#    copy_file(pgbuild / f'Release/pg_config/pg_config.exe', top / 'bin')
 
     # Prepare local include directory for building from
     for dir in ('win32', 'win32_msvc'):
@@ -333,8 +329,8 @@ def build_psycopg():
     run_python(
         ["setup.py", "build_ext", "--have-ssl"]
         + ["-l", "libpgcommon libpgport"]
-        + ["-L", str(opt.ssl_build_dir / 'lib;') + str(opt.pg_build_dir / 'lib')]
-        + ['-I', str(opt.ssl_build_dir / 'include;') + str(opt.pg_build_dir / 'include')])
+        + ["-L", opt.ssl_build_dir / 'lib']
+        + ['-I', opt.ssl_build_dir / 'include'])
     run_python(["setup.py", "build_py"])
 
 
